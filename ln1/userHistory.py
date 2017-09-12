@@ -41,5 +41,5 @@ s.isspace() 所有字符都是空白字符、\t、\n、\r
 # (队列： 前删后增)
 # 程序退出前，history对象存储到文件中
 # pickle.dump？
-# history = pickle.load(open('history',rb))     #读取历史记录
-# open('order.log','r', encoding='UTF-8')
+# history = pickle.load(open('history','rb'))     #读取历史记录
+# history = open('history','r', encoding='UTF-8')
