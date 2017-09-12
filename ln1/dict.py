@@ -13,7 +13,6 @@ d = {k:v for k,v in d.items() if v >90 }
 a = sorted([2,4,5,2,5,6,8,34,23])
 # print(a)
 
-from random import randint
 a = {x: randint(60, 100) for x in 'abcxyz'}
 # print(a)
 b = sorted(a)   # 只会按着键排序 ['a', 'b', 'c', 'x', 'y', 'z']
@@ -39,6 +38,7 @@ from random import sample
 sample('abcdefg', 3)       # 生成随机进球成员
 
 # 每个球员进球一到四个,每次三到六球员进球
+# 字典解析
 s1 = {x: randint(1,4) for x in sample('abcdefg', randint(3, 6))}
 s2 = {x: randint(1,4) for x in sample('abcdefg', randint(3, 6))}
 s3 = {x: randint(1,4) for x in sample('abcdefg', randint(3, 6))}
@@ -50,3 +50,14 @@ for k in s1:
 
 
 # 方法二
+# 得到字典所有键集合 keys(),得到字典keys集合
+# map函数，得到所有字典keys集合
+# reduce取所有字典keys集合的交集
+s1.keys() & s2.keys() & s3.keys()
+
+# 扩展：统计出前n轮，每场比赛都进球人
+from functools import reduce
+map(dict.keys, [s1,s2,s3])
+reduce(lambda a, b:a & b,map(dict.keys, [s1, s2, s3]))
+
+
