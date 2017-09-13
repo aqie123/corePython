@@ -14,3 +14,11 @@ condition variables  条件变量
 semaphores 信号
 implementing 执行
  draft 草稿，起草，指定
+  figures 价格金额，图表
+  omitted 省略
+  Assembly 集合
+  Preprocessing 预处理
+   segments 片段
+   allocation 分配
+   integers 整数
+   Representing 代表
