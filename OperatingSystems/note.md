@@ -22,3 +22,5 @@ implementing 执行
    allocation 分配
    integers 整数
    Representing 代表
+   'float' object cannot be interpreted as an integer
+   浮点型对象不能被解释为整数
