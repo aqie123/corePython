@@ -57,11 +57,53 @@
 		在命令上 输入 init 3 命令 切换到dos界面 
 
 		输入 init 5命令 切换到图形界面
-	16.
+	16. 查看ip信息
+		1.ifconfig
+	17.新建文件夹
+		1.mkdir /home/aiqe/test
+		2.删除文件夹 rm -rf
+		3.删除文件   rm -f
 
 二：
 	1.配置lnmp
-		1.安装nginx
+		1.编译安装nginx(http://www.cnblogs.com/hafiz/p/6891458.html)
+			a.查看gcc版本 
+				gcc -v
+			b.yum install gcc-c++
+			c.yum install -y pcre pcre-devel
+			d.yum install -y zlib zlib-devel
+			e.yum install -y openssl openssl-devel
+
+			f.下载nginx源码包
+				1.wget http://nginx.org/download/nginx-1.12.0.tar.gz
+				2.解压缩：tar -zxvf nginx-1.12.0.tar.gz
+				3.cd nginx-1.12.0
+				4.新建文件夹
+					更改文件夹权限	chmod -R 777 /var   
+					mkdir /var/temp /var/temp/nginx /var/run/nginx /var/log/nginx
+						  /usr/local/nginx
+				5.配置文件
+
+　　　　./configure --prefix=/usr/local/nginx --pid-path=/var/run/nginx/nginx.pid --lock-path=/var/lock/nginx.lock --error-log-path=/var/log/nginx/error.log --http-log-path=/var/log/nginx/access.log --with-http_gzip_static_module --http-client-body-temp-path=/var/temp/nginx/client --http-proxy-temp-path=/var/temp/nginx/proxy --http-fastcgi-temp-path=/var/temp/nginx/fastcgi --http-uwsgi-temp-path=/var/temp/nginx/uwsgi --http-scgi-temp-path=/var/temp/nginx/scgi
+				6.--with-http_stub_status_module：支持nginx状态查询
+				--with-http_ssl_module：支持https
+				--with-http_spdy_module：支持google的spdy,想了解请百度spdy,这个必须有ssl的支持
+				--with-pcre：为了支持rewrite重写功能，必须制定pcre
+				7.  编译安装
+					make && make install
+				8. 进入安装目录
+					cd /usr/local/nginx/sbin/
+				   启动
+				   ./nginx
+				9.查看是否启动
+					ps -ef | grep nginx
+				10.
+					快速停止   cd /usr/local/nginx/sbin && ./nginx -s stop
+					完整停止	cd /usr/local/nginx/sbin && ./nginx -s quit
+                    先停止再启动 ： ./nginx -s quit && ./nginx
+                    重新加载配置文件 ./nginx -s reload
+                11. cd /usr/local/nginx
+
 
 		2.安装mysql
 			a. 查看电脑版本  uname -a
@@ -79,9 +121,17 @@
 					select @@validate_password_length;
 				查看编码方式：show variables like 'character%';
 
+				修改编码：vim /etc/my.cnf 
+				[client]
+				default-character-set=utf8
+				[mysqld]
+				character-set-server=utf8
+			e.重启mysql服务
+				systemctl restart mysqld.service
 
 		3.安装php
 	2.配置nginx
+		1.
 	3.
 
 三：
