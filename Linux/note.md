@@ -25,7 +25,8 @@
 			sudo yum install google-chrome-stable‘
 		4.创建快捷方式
 			a.cd usr/share/applications
-
+		5.命令行启动
+			google-chrome  --user-data-dir
 
 	10. Cannot find a valid baseurl for repo: base/7/x86_64
 		1.cd /etc/sysconfig/network-scripts
@@ -63,6 +64,10 @@
 		1.mkdir /home/aiqe/test
 		2.删除文件夹 rm -rf
 		3.删除文件   rm -f
+	18.cp -r /a  /b      复制a 到b
+	   cp /usr/local/nginx/html/php7.tar.gz .  复制到当前目录
+	   删除文件 rm -r /usr/local/nginx/html/php7.tar.gz
+	   rm -rf /home/test  递归删除目露
 
 二：
 	1.配置lnmp
@@ -103,6 +108,15 @@
                     先停止再启动 ： ./nginx -s quit && ./nginx
                     重新加载配置文件 ./nginx -s reload
                 11. cd /usr/local/nginx
+                12.测试
+                rm /usr/local/nginx/html/index.html
+				echo "<?php phpinfo(); ?>" >> /usr/local/nginx/html/index.php
+				echo "hello aqie" >> /usr/local/nginx/html/index.html
+
+				13.问题：
+					1.mkdir /var/run/nginx  重启虚拟机这个目录会被删除
+					2.pid logs/nginx.pid;
+						若是在nginx下创建logs目录，再把上面的注释去掉，或许也可以。
 
 
 		2.安装mysql
@@ -129,7 +143,58 @@
 			e.重启mysql服务
 				systemctl restart mysqld.service
 
-		3.安装php
+		3.编译安装php
+			(https://secure.php.net/manual/zh/install.unix.nginx.php)
+			(http://blog.csdn.net/abcdocker/article/details/55505076)
+			1.下载
+				wget -O php7.tar.gz http://cn2.php.net/get/php-7.0.4.tar.gz/from/this/mirror
+			2. 解压 tar -xvf php7.tar.gz
+			3. cd php-7.0.4
+			4.安装依赖包
+			yum install libxml2 libxml2-devel openssl openssl-devel bzip2 bzip2-devel libcurl libcurl-devel libjpeg libjpeg-devel libpng libpng-devel freetype freetype-devel gmp gmp-devel libmcrypt libmcrypt-devel readline readline-devel libxslt libxslt-devel
+			5.配置文件
+				1.libmcrypt源码安装方法
+					http://ask.apelearn.com/question/7296
+				2.vim /etc/ld.so.conf.d/local.conf
+			6.make && make install
+			7.配置环境变量
+				vim /etc/profile
+				末尾追加
+				export PATH=/usr/local/php/bin:$PATH
+				执行命令使改动生效
+				source /etc/profile
+			8.配置php-fpm 
+				1.需要在安装软件包目录
+				2.复制文件
+					cp php.ini-production /etc/php.ini
+					cp /usr/local/php/etc/php-fpm.conf.default /usr/local/php/etc/php-fpm.conf
+					cp /usr/local/php/etc/php-fpm.d/www.conf.default /usr/local/php/etc/php-fpm.d/www.conf
+					cp sapi/fpm/init.d.php-fpm /etc/init.d/php-fpm
+					chmod +x /etc/init.d/php-fpm
+				3.vim /usr/local/php/etc/php-fpm.d/www.conf
+					user 和group改为 啊切
+				4. nginx使用指定的用户.用户组运行
+					vim /usr/local/nginx/conf/nginx.conf
+					#即以web组的nginx用户来运行nginx.
+					user nginx web;
+					/usr/local/nginx/sbin/nginx -s reload
+			9.nginx 解析php   站点根目录：/usr/local/nginx/html
+				1.vim /usr/local/nginx/conf/nginx.conf   
+				2. location ~ \.php$ {
+				       root           /usr/local/nginx/html;
+				       fastcgi_pass   127.0.0.1:9000;
+				       fastcgi_index  index.php;
+				       fastcgi_param SCRIPT_FILENAME /usr/local/nginx/html/$fastcgi_script_name;
+				       include        fastcgi_params;
+				    }
+				3.重启nginx
+					
+		4.yum安装php
+			1.安装epel-release
+			rpm -ivh http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-5.noarch.rpm
+			2.rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
+			3.yum install php70w
+
 	2.配置nginx
 		1.
 	3.
@@ -223,3 +288,73 @@
 		关闭： service iptables stop
 		查看防火墙状态： service iptables status
 				  	 
+
+四：
+	./configure \
+	--prefix=/usr/local/php \
+	--with-config-file-path=/etc \
+	--enable-fpm \
+	--with-fpm-user=nginx  \
+	--with-fpm-group=nginx \
+	--enable-inline-optimization \
+	--disable-debug \
+	--disable-rpath \
+	--enable-shared  \
+	--enable-soap \
+	--with-libxml-dir \
+	--with-xmlrpc \
+	--with-openssl \
+	--with-mcrypt \
+	--with-mhash \
+	--with-pcre-regex \
+	--with-sqlite3 \
+	--with-zlib \
+	--enable-bcmath \
+	--with-iconv \
+	--with-bz2 \
+	--enable-calendar \
+	--with-curl \
+	--with-cdb \
+	--enable-dom \
+	--enable-exif \
+	--enable-fileinfo \
+	--enable-filter \
+	--with-pcre-dir \
+	--enable-ftp \
+	--with-gd \
+	--with-openssl-dir \
+	--with-jpeg-dir \
+	--with-png-dir \
+	--with-zlib-dir  \
+	--with-freetype-dir \
+	--enable-gd-native-ttf \
+	--enable-gd-jis-conv \
+	--with-gettext \
+	--with-gmp \
+	--with-mhash \
+	--enable-json \
+	--enable-mbstring \
+	--enable-mbregex \
+	--enable-mbregex-backtrack \
+	--with-libmbfl \
+	--with-onig \
+	--enable-pdo \
+	--with-mysqli=mysqlnd \
+	--with-pdo-mysql=mysqlnd \
+	--with-zlib-dir \
+	--with-pdo-sqlite \
+	--with-readline \
+	--enable-session \
+	--enable-shmop \
+	--enable-simplexml \
+	--enable-sockets  \
+	--enable-sysvmsg \
+	--enable-sysvsem \
+	--enable-sysvshm \
+	--enable-wddx \
+	--with-libxml-dir \
+	--with-xsl \
+	--enable-zip \
+	--enable-mysqlnd-compression-support \
+	--with-pear \
+	--enable-opcache
