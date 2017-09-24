@@ -103,6 +103,7 @@
 				9.查看是否启动
 					ps -ef | grep nginx
 				10.
+					启动       cd /usr/local/nginx/sbin/ && ./nginx
 					快速停止   cd /usr/local/nginx/sbin && ./nginx -s stop
 					完整停止	cd /usr/local/nginx/sbin && ./nginx -s quit
                     先停止再启动 ： ./nginx -s quit && ./nginx
@@ -111,12 +112,17 @@
                 12.测试
                 rm /usr/local/nginx/html/index.html
 				echo "<?php phpinfo(); ?>" >> /usr/local/nginx/html/index.php
+				
 				echo "hello aqie" >> /usr/local/nginx/html/index.html
 
-				13.问题：
+				13.启动问题：
 					1.mkdir /var/run/nginx  重启虚拟机这个目录会被删除
 					2.pid logs/nginx.pid;
 						若是在nginx下创建logs目录，再把上面的注释去掉，或许也可以。
+					3./usr/local/nginx/sbin/nginx -c /usr/local/nginx/conf/nginx.conf 
+				14. html正常显示,php 404
+					1.php-fpm没有运行
+
 
 
 		2.安装mysql
@@ -171,13 +177,17 @@
 					cp /usr/local/php/etc/php-fpm.d/www.conf.default /usr/local/php/etc/php-fpm.d/www.conf
 					cp sapi/fpm/init.d.php-fpm /etc/init.d/php-fpm
 					chmod +x /etc/init.d/php-fpm
+
+					启动php-fpm
+					/etc/init.d/php-fpm start
 				3.vim /usr/local/php/etc/php-fpm.d/www.conf
 					user 和group改为 啊切
-				4. nginx使用指定的用户.用户组运行
+				4. nginx使用指定的用户.用户组运行(这个没试过)
 					vim /usr/local/nginx/conf/nginx.conf
 					#即以web组的nginx用户来运行nginx.
 					user nginx web;
 					/usr/local/nginx/sbin/nginx -s reload
+				5 启动
 			9.nginx 解析php   站点根目录：/usr/local/nginx/html
 				1.vim /usr/local/nginx/conf/nginx.conf   
 				2. location ~ \.php$ {
@@ -188,6 +198,11 @@
 				       include        fastcgi_params;
 				    }
 				3.重启nginx
+					cd /usr/local/nginx/sbin
+					./nginx -s quit && ./nginx
+			10. 配置php.ini (/etc/php.ini)  （/usr/local/php/etc/php-fpm.d/www.conf）
+				1. 报错 display_errors = On  vim /usr/local/php/etc/php-fpm.d/www.conf  php_flag[display_errors] = on
+				2.
 					
 		4.yum安装php
 			1.安装epel-release
@@ -358,3 +373,52 @@
 	--enable-mysqlnd-compression-support \
 	--with-pear \
 	--enable-opcache
+
+
+五： linux 基本使用
+	1.中文输入法
+		a. super + 空格
+	2.创建文件夹快捷方式
+		1.ln -s /home/LXBC /etc/LXBC553(快捷方式)
+			ln -s /usr/local/nginx/html(源文件) /home/aqie/桌面/html
+	3.修改文件夹权限
+		1.chmod -R  777  /usr/local/nginx/html
+		2.chmod -R  777  /home/aqie
+	4.创建用户和组(todo)
+	5.下载git项目 test
+		1.测试pdo连接数据库，并在浏览器输出
+	6.修改vim tab空格
+		1.vim ~/.vimrc
+	7.  文件操作
+		a. /home/work下的文件复制到/home/temp里面？
+			cp -R /home/work/* /home/temp
+			cp /home/aqie/aqie/test/mypdo.php  /usr/local/nginx/html
+		b.在nginx/html 里创建home/aqie/aqie 软连接
+			ln -s /home/aqie/aqie /usr/local/nginx/html/aqie
+
+		c. 删除文件(问题：删除软连接里面的文件，源文件会不会消失) 会消失
+			/home/aqie/aqie/test/README.md  真实的
+			rm /usr/local/nginx/html/aqie/test/README.md  删除这个上面也没了
+			测试：删除软连接
+			rm -rf /usr/local/nginx/html/aqie
+			源文件不会受影响
+
+			做软连接： 源文件-> /home/aqie/aqie/test
+					   映射->   ln -s /home/aqie/aqie  /usr/local/nginx/html
+			删除 rm -rf /usr/local/nginx/html
+			通过软连接显示文件：
+			echo "<?php echo "hello aqie"; ?>" >> /home/aqie/aqie/test.php
+			echo "粗错啦！！！" >> /home/aqie/aqie/50x.html
+
+	8.vim常见操作
+		1.快速查找
+			/error_reporting = E_ALL
+		2.  
+			全部删除：按esc后，然后dG
+			全部复制：按esc后，然后ggyG
+		3.撤销
+			u   撤销上一步的操作
+			Ctrl+r 恢复上一步被撤销的操作
+	9. linux 连接github
+		1.git config --global user.email "2924811900@qq.com"
+  		  git config --global user.name "aqie123"
