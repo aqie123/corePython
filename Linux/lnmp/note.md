@@ -422,3 +422,10 @@
 	9. linux 连接github
 		1.git config --global user.email "2924811900@qq.com"
   		  git config --global user.name "aqie123"
+  		2.生成密钥
+  			a.ssh-keygen -t rsa -C "2924811900@qq.com"
+  			b. cd /home/aqie/.ssh/id_rsa
+  			c.cp /home/aqie/.ssh/id_rsa.pub .
+  			d. 验证
+  				ssh git@github.com
+
