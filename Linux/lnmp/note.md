@@ -180,6 +180,7 @@
 
 					启动php-fpm
 					/etc/init.d/php-fpm start
+					service php-fpm restart  重启
 				3.vim /usr/local/php/etc/php-fpm.d/www.conf
 					user 和group改为 啊切
 				4. nginx使用指定的用户.用户组运行(这个没试过)
@@ -188,6 +189,7 @@
 					user nginx web;
 					/usr/local/nginx/sbin/nginx -s reload
 				5 启动
+
 			9.nginx 解析php   站点根目录：/usr/local/nginx/html
 				1.vim /usr/local/nginx/conf/nginx.conf   
 				2. location ~ \.php$ {
@@ -210,9 +212,7 @@
 			2.rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
 			3.yum install php70w
 
-	2.配置nginx
-		1.
-	3.
+
 
 三：
 	1.关闭firewall：
@@ -389,6 +389,7 @@
 		1.测试pdo连接数据库，并在浏览器输出
 	6.修改vim tab空格
 		1.vim ~/.vimrc
+		2. vim /etc/vimrc
 	7.  文件操作
 		a. /home/work下的文件复制到/home/temp里面？
 			cp -R /home/work/* /home/temp
@@ -419,6 +420,9 @@
 		3.撤销
 			u   撤销上一步的操作
 			Ctrl+r 恢复上一步被撤销的操作
+		4.G: 移动到文档末尾
+		  gg: 移动到文档开头
+		5.dd：剪切当前行
 	9. linux 连接github
 		1.git config --global user.email "2924811900@qq.com"
   		  git config --global user.name "aqie123"
@@ -428,4 +432,70 @@
   			c.cp /home/aqie/.ssh/id_rsa.pub .
   			d. 验证
   				ssh git@github.com
+  	10.
+  		1./etc/init.d/php-fpm start
+  		2.mkdir /var/run/nginx
+  		3.cd /usr/local/nginx/sbin/ && ./nginx
+  		4. nginx重启 : 
+  			cd /usr/local/nginx/sbin && ./nginx -s stop && ./nginx
+  			service php-fpm restart  重启
 
+
+六。linux 下编译安装yaf
+	1.git clone https://github.com/laruence/php-yaf.git
+	2.cd php-yaf
+	3.git branch -a
+	3.5. yum install m4
+		 yum install autoconf
+
+	#开始编译安装
+	4.  /usr/local/php/bin/phpize
+		会新建一个configure文件
+	5. ./configure --with-php-config=/usr/local/php/bin/php-config
+	6.make && make install
+		解析makefile内容
+		find ./ -name 'yaf.so'
+	7.vim /etc/php.ini 
+	8.extension = 安装完成显示的目录地址/yaf.so
+	9. extension =/usr/local/php/lib/php/extensions/no-debug-non-zts-20151012/yaf.so
+		ls modules/
+	10.notes
+		which php   /usr/local/php/bin/php
+		find / -name 'php-config'     /usr/local/php/bin/php-config
+		netstat -tpnlu
+		ifconfig -a   查看本机ip
+	11.下载 yaf
+		1. cd /home/aqie/phpApi  （https://github.com/laruence/yaf）
+		2. cd yaf/tools/cg
+		3. ./yaf_cg phpapi
+		4. cd output 
+		5. yum -y install tree tree phpapi/
+
+
+
+七。配置nginx
+	1.nginx 配置文件在 vim /usr/local/nginx/conf/nginx.conf
+		cd /usr/local/nginx/conf
+		include vhosts/*.conf;
+		mkdir vhosts
+		http{}最后添加 include vhosts/*.conf;
+	2.  配置 vim /usr/local/nginx/conf/vhosts/www.phpapi.com.conf
+		/usr/local/nginx/sbin/nginx -t    检测配置文件正确性 
+		mkdir /home/aqie/phpApi; 项目根目录
+		vim /home/aqie/phpApi/index.html  成功
+		vim /home/aqie/phpApi/index.php
+		location / {
+            root  /home/aqie/phpApi;
+            index  index.php index.html index.htm;
+        }
+        
+        location ~ \.php$ {
+             root           /home/aqie/phpApi;
+             fastcgi_pass   127.0.0.1:9000;
+             fastcgi_index  index.php;
+             fastcgi_param  SCRIPT_FILENAME  /home/aqie/phpApi$fastcgi_script_name;
+             include        fastcgi_params;
+        }
+        if (!-e $request_filename) {
+    		rewrite ^/(.*)  /index.php?$1 last;
+  		}
