@@ -423,6 +423,40 @@
 		4.G: 移动到文档末尾
 		  gg: 移动到文档开头
 		5.dd：剪切当前行
+		6.跳转到行尾 End
+		7.格式化代码
+			a. gg跳转到第一行
+			b. shift + v转到可视模式
+			c. shift + g 全选
+			d. =
+		    格式化全文： gg=G
+		8. vim 插件 Vundle
+			1.git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+			2. 配置文件  vim /home/aqie/.vimrc
+				a.tree :helptags ~/.vim/bundle/nerdtree/doc/
+				b.ctrl + w 切换
+				c. t 在新标签页打开
+		9.升级 vim8 (http://blog.csdn.net/u013388603/article/details/72780586)
+			1. 
+				cd /usr/local/src git clone git@github.com:vim/vim.git
+				cd vim/src
+				cd /usr/local/src/vim/src
+
+				./configure --prefix=/usr/local/vim8
+				make && make install
+			2.编辑这个文件  /usr/local/vim8/bin/vim /etc/profile.d/path.sh
+			 添加  export PATH=$PATH:/usr/local/vim8/bin/
+			 使命令生效  source /etc/profile.d/path.sh
+			3. ./configure --prefix=/usr/local/vim8 --enable-pythoninterp=yes --enable-python3interp=yes --with-python-config-dir=/usr/bin/python2.7-config --enable-multibyte 
+
+			./configure --with-features=huge --enable-multibyte --enable-rubyinterp=yes --enable-pythoninterp=yes --with-python-config-dir=/usr/bin/python2.7-config --enable-python3interp=yes --with-python3-config-dir=/usr/local/bin/python3.5-config  --enable-gui=gtk2 --enable-cscope --prefix=/usr/local/vim8
+			4. vim --version  查看是否支持python
+		10.
+			系统 vimrc 文件: "$VIM/vimrc"
+		     用户 vimrc 文件: "$HOME/.vimrc"
+		 第二用户 vimrc 文件: "~/.vim/vimrc"
+
+
 	9. linux 连接github
 		1.git config --global user.email "2924811900@qq.com"
   		  git config --global user.name "aqie123"
@@ -432,10 +466,13 @@
   			c.cp /home/aqie/.ssh/id_rsa.pub .
   			d. 验证
   				ssh git@github.com
-  	10.
-  		1./etc/init.d/php-fpm start
-  		2.mkdir /var/run/nginx
-  		3.cd /usr/local/nginx/sbin/ && ./nginx
+
+  	10.  开机正常运行项目
+  		1.mkdir /var/run/nginx
+  		2.cd /usr/local/nginx/sbin/ && ./nginx
+  		3./etc/init.d/php-fpm start
+  		
+  		
   		4. nginx重启 : 
   			cd /usr/local/nginx/sbin && ./nginx -s stop && ./nginx
   			service php-fpm restart  重启
@@ -470,6 +507,8 @@
 		3. ./yaf_cg phpapi
 		4. cd output 
 		5. yum -y install tree tree phpapi/
+		6. cp -rf phpapi/*  /home/aqie/phpApi/
+		7. 删除文件夹  rm -rf yaf/
 
 
 
@@ -483,7 +522,7 @@
 		/usr/local/nginx/sbin/nginx -t    检测配置文件正确性 
 		mkdir /home/aqie/phpApi; 项目根目录
 		vim /home/aqie/phpApi/index.html  成功
-		vim /home/aqie/phpApi/index.php
+		vim /home/aqie/phpApi/test.php
 		location / {
             root  /home/aqie/phpApi;
             index  index.php index.html index.htm;
@@ -499,3 +538,59 @@
         if (!-e $request_filename) {
     		rewrite ^/(.*)  /index.php?$1 last;
   		}
+八。
+	1.编写phpApi
+		a. mv /usr/local/nginx/html/phpApi/README.md .
+	2.自定义路由
+		$route = new Yaf_Route_Rewrite(
+     　　'product/:ident',
+     　　array(
+     　　　　'controller' => 'products',
+     　　　　'action' => 'view'
+     　　)
+     	);
+     	$router->addRoute('product', $route);
+    3. 网站根目录 ：cd /home/aqie/phpApi  修改权限: chmod -R  777 /home/aqie/
+    4. cp Index.php User.php  复制一个控制器
+    	user/reg/:username -> 访问User控制器下面的reg方法 (http://www.phpapi.com/user/reg)
+
+
+九，centos 编译安装python3.5
+	1.wget https://www.python.org/ftp/python/3.5.1/Python-3.5.1.tgz
+	2.tar -zxvf Python-3.5.1.tgz
+	3.mv Python-3.5.1 /usr/local
+	4.ll
+	5.  查看python依赖
+		ll /usr/bin | grep python
+	6.rm -rf /usr/bin/python
+	7.cd /usr/local/Python-3.5.1/
+	8. ./configure
+	9.make && make install
+	10.ln -s /usr/local/bin/python3.5 /usr/bin/python
+	11.  find / -name python2.7-config
+	12. /usr/bin/python2.7-config   /usr/local/bin/python3.5-config
+
+十。php定时执行任务
+	1.  开始–》附件–》系统工具–》任务计划程序 
+		"D:\phpStudy\php\php-5.6.27-nts\php.exe" -q "D:\test\test.php"
+		"E:\phpStudy\php\php-5.5.38\php.exe" -q "E:\test\test.php"
+	2.curl http://60.205.217.197:81/crowd/go/index/hello
+	3.curl http://60.205.217.197:81/crowd/go/index/aqie
+
+十一。curl配置
+	1. CURL_HOME   "%CURL_HOME%";
+
+十二：mysql 触发器
+	1. 向 auth_admin 表写入同时向admin插入数据
+		a.创建触发器
+			DELIMITER \\\
+			create trigger goods_attach after insert on ecs_goods for each row
+			begin
+				set @v1 = new.goods_id;
+				insert into ecs_goods_attach(goods_id) values(@v1);
+			end \\\
+			DELIMITER ;
+
+			测试： insert into auth_admin(admin_name,password) values('aqie','123');
+		b.SHOW TRIGGERS;
+		c.删除 DROP TRIGGER [IF EXISTS] goods_attach
