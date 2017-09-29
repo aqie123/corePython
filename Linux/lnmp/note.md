@@ -250,6 +250,7 @@
 			iptables -A INPUT -p tcp --dport 21 -j ACCEPT
 			#开放80端口(HTTP)
 			iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+			iptables -I INPUT -p tcp --dport 80 -j ACCEPT
 			#开放443端口(HTTPS)
 			iptables -A INPUT -p tcp --dport 443 -j ACCEPT
 			#允许ping
@@ -262,18 +263,40 @@
 			iptables -P OUTPUT ACCEPT
 			#所有转发一律丢弃
 			iptables -P FORWARD DROP
+
+			开放Telnet端口
+			iptables -A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 23 -j ACCEPT
 		e.其他规则设定
 			#如果要添加内网ip信任（接受其所有TCP请求）
 			iptables -A INPUT -p tcp -s 45.96.174.68 -j ACCEPT
+			iptables -A INPUT -s 192.168.0.135 -j ACCEPT
 			#过滤所有非以上规则的请求
 			iptables -P INPUT DROP
 			#要封停一个IP，使用下面这条命令：
 			iptables -I INPUT -s ***.***.***.*** -j DROP
 			#要解封一个IP，使用下面这条命令:
 			iptables -D INPUT -s ***.***.***.*** -j DROP
+
+			iptables -A INPUT -s 192.168.0.0/24 -j ACCEPT
+		    //允许源IP地址为192.168.0.0/24网段的包流进（包括所有的协议，这里也可以指定单个IP）
+		    iptables -A INPUT -d 192.168.0.22 -j ACCEPT
+		    //允许所有的IP到192.168.0.22的访问
+		    iptables -A INPUT -p tcp --dport 80 -j ACCEPT 
+		    //开放本机80端口
+		    iptables -A INPUT -p icmp --icmp-type echo-request -j ACCEPT
+		    //开放本机的ICMP协议
 		f.保存规则设定
 			#保存上述规则
 			service iptables save
+
+			 删除规则
+			 iptables -D INPUT -s 192.168.0.21 -j ACCEPT
+			 保存规则
+			 service iptables save
+			 清空缓冲区
+			 iptables -F
+			 重启
+			 service iptables restart
 		g.开启iptables服务 
 			#注册iptables服务
 			#相当于以前的chkconfig iptables on
@@ -290,6 +313,17 @@
 			iptables -t mangle -I PREROUTING -p tcp --dport 1306 -j MARK --set-mark 883306 
 			iptables -t nat -I PREROUTING -p tcp --dport 1306 -j REDIRECT --to-ports 3306 
 			iptables -I INPUT -p tcp --dport 3306 -m mark --mark 883306 -j ACCEPT
+		j.查看端口情况
+			1.netstat -an | grep 22
+			2.关闭端口号:iptables -A INPUT -p tcp --drop 端口号-j DROP
+ 
+                 iptables -A OUTPUT -p tcp --dport 端口号-j DROP
+ 
+			 打开端口号：iptables -A INPUT -ptcp --dport  端口号-j ACCEPT
+			3.lsof -i:80  查看端口情况
+			4，终极大法
+				  iptables -F
+				  iptables -P INPUT ACCEPT
 	4.关闭防火墙
 		永久性生效，重启后不会复原
 
@@ -454,8 +488,32 @@
 		10.
 			系统 vimrc 文件: "$VIM/vimrc"
 		     用户 vimrc 文件: "$HOME/.vimrc"
-		 第二用户 vimrc 文件: "~/.vim/vimrc"
-
+		   第二用户 vimrc 文件: "~/.vim/vimrc"
+		11. vim 配置
+			1.http://blog.csdn.net/g_brightboy/article/details/14229139
+			2.插件安装： http://blog.csdn.net/namecyf/article/details/7787479
+		12.复制 粘贴 剪切 删除
+			1. 2yy拷贝当前行及其下一行
+			2. shift+p 在当前行前粘贴
+			3. :1,10d 将1-10行剪切。
+			4. 
+				a.删除不能用 : set backspace=indent,eol,start
+				b.3dd代表删除三行
+				c.用v选中文本之后可以按y进行复制，如果按d就表示剪切，之后按p进行粘贴
+			5.跳转到指定行
+				a. :12跳转到第十二行
+				b. dw 删除光标后单词剩余部分
+				c. d$ 删除光标之后该行剩余部分
+				d. dd 删除当前该行
+				e. :1 :$ 跳转到行首行尾  gg跳转到首行，G跳转到最后一行
+					下一行o 
+				f.跳转到光标治安钱位置 Ctrl + O
+		13.分屏
+			1.vim -o 
+		14. 代码折叠
+			zc 折叠最外层
+			zo 展开最外层
+			za 互相切换
 
 	9. linux 连接github
 		1.git config --global user.email "2924811900@qq.com"
@@ -467,15 +525,7 @@
   			d. 验证
   				ssh git@github.com
 
-  	10.  开机正常运行项目
-  		1.mkdir /var/run/nginx
-  		2.cd /usr/local/nginx/sbin/ && ./nginx
-  		3./etc/init.d/php-fpm start
-  		
-  		
-  		4. nginx重启 : 
-  			cd /usr/local/nginx/sbin && ./nginx -s stop && ./nginx
-  			service php-fpm restart  重启
+  	
 
 
 六。linux 下编译安装yaf
@@ -538,8 +588,9 @@
         if (!-e $request_filename) {
     		rewrite ^/(.*)  /index.php?$1 last;
   		}
+
 八。
-	1.编写phpApi
+	1.编写phpApi (cd /home/aqie/phpApi)
 		a. mv /usr/local/nginx/html/phpApi/README.md .
 	2.自定义路由
 		$route = new Yaf_Route_Rewrite(
@@ -594,3 +645,30 @@
 			测试： insert into auth_admin(admin_name,password) values('aqie','123');
 		b.SHOW TRIGGERS;
 		c.删除 DROP TRIGGER [IF EXISTS] goods_attach
+	2. 从一张表读取数据写入另一张表
+		insert into ecs_goods_attachs(goods_id) select goods_id from ecs_goods order by goods_id;
+	3. 创建一张结构类似表
+		create table ecs_goods_attachs like ecs_goods_attach;
+
+
+十三：xshell 连接虚拟机
+	1. 192.168.41.128(虚拟机)
+	2. 192.168.0.135(本机)
+	3. iptables -A INPUT -p tcp -s 192.168.0.135 -j ACCEPT
+	4. /home/aqie/phpApi  yaf 项目
+	   /home/aqie/aqie    本地测试项目
+	   nginx 根目录 ： /usr/localnginx/html
+
+	   a.先删除之前软连接 rm -rf /usr/local/nginx/html
+	   b.创建软连接  ln -s /home/aqie/phpApi /usr/local/nginx/html
+	   c.添加规则
+	   		1.vim /usr/local/nginx/conf/nginx.conf
+	   		2.vim /usr/local/nginx/conf/vhosts/www.phpapi.com.conf
+
+十四：线缆被拔出
+	1. 控制面板->管理工具->服务
+
+十五：yaf框架基本使用
+	1. 路由
+		a. ?c=index&a=test
+		b. 
