@@ -1,9 +1,14 @@
 10.  开机正常运行项目
-  		mkdir /var/run/nginx
-  		cd /usr/local/nginx/sbin/ && ./nginx
-  		/etc/init.d/php-fpm start
+mkdir /var/run/nginx
+cd /usr/local/nginx/sbin/ && ./nginx
+/etc/init.d/php-fpm start
   		
   		
-  		4. nginx重启 : 
-  			cd /usr/local/nginx/sbin && ./nginx -s stop && ./nginx
-  			service php-fpm restart  重启
+4. nginx重启 : 
+	cd /usr/local/nginx/sbin && ./nginx -s stop && ./nginx
+	service php-fpm restart  重启
+
+nginx 配置文件 vim /usr/local/nginx/conf/nginx.conf
+nginx 未知     cd /usr/local/nginx/sbin/nginx
+
+/usr/local/nginx/sbin/nginx -c /usr/local/nginx/conf/nginx.conf

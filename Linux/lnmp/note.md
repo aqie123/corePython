@@ -148,6 +148,9 @@
 				character-set-server=utf8
 			e.重启mysql服务
 				systemctl restart mysqld.service
+			f.mysql 允许远程用户登录访问
+				1.GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '753951kzlAqie*7jskols' WITH GRANT OPTION;
+				2.FLUSH PRIVILEGES; 
 
 		3.编译安装php
 			(https://secure.php.net/manual/zh/install.unix.nginx.php)
@@ -464,7 +467,7 @@
 			c. shift + g 全选
 			d. =
 		    格式化全文： gg=G
-		8. vim 插件 Vundle
+		8. vim 插件 Vundle （）
 			1.git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
 			2. 配置文件  vim /home/aqie/.vimrc
 				a.tree :helptags ~/.vim/bundle/nerdtree/doc/
@@ -507,13 +510,24 @@
 				d. dd 删除当前该行
 				e. :1 :$ 跳转到行首行尾  gg跳转到首行，G跳转到最后一行
 					下一行o 
-				f.跳转到光标治安钱位置 Ctrl + O
+				f.跳转到光标之前位置 Ctrl + O
 		13.分屏
 			1.vim -o 
+			2.vim -On file1 file2 ...
 		14. 代码折叠
 			zc 折叠最外层
 			zo 展开最外层
 			za 互相切换
+		15.撤销
+			1. u 撤销
+			2. ctrl+r 反撤销
+		16.展示目录
+			1. tree vendor -L 2 行级限制
+		17.vim多行缩进
+			1.v进入visual状态，选择多行，用>或<缩进或缩出 
+			2.多行用n== ; gg=G可对整篇代码进行排版
+			3. gg   shift+G 首尾
+			4. (http://blog.csdn.net/topasstem8/article/details/6678215)
 
 	9. linux 连接github
 		1.git config --global user.email "2924811900@qq.com"
@@ -562,7 +576,7 @@
 
 
 
-七。配置nginx
+七。配置nginx 多站点
 	1.nginx 配置文件在 vim /usr/local/nginx/conf/nginx.conf
 		cd /usr/local/nginx/conf
 		include vhosts/*.conf;
@@ -588,6 +602,8 @@
         if (!-e $request_filename) {
     		rewrite ^/(.*)  /index.php?$1 last;
   		}
+  	3.  问题： nginx: [error] open() "/var/run/nginx/nginx.pid" 
+  		/usr/local/nginx/sbin/nginx -c /usr/local/nginx/conf/nginx.conf
 
 八。
 	1.编写phpApi (cd /home/aqie/phpApi)
@@ -620,6 +636,11 @@
 	10.ln -s /usr/local/bin/python3.5 /usr/bin/python
 	11.  find / -name python2.7-config
 	12. /usr/bin/python2.7-config   /usr/local/bin/python3.5-config
+
+	13.修改默认为python2
+		1. rm /usr/bin/python
+		2. ln -s /usr/bin/python2 /usr/bin/python
+
 
 十。php定时执行任务
 	1.  开始–》附件–》系统工具–》任务计划程序 
@@ -672,3 +693,116 @@
 	1. 路由
 		a. ?c=index&a=test
 		b. 
+	2.
+		public $errno = 0;
+		public $errmsg = '';
+		private $_db;
+		public function __construct() {
+			$this->_db = new PDO('mysql:host=127.0.0.1;dbname=test;','root','root');
+	    }
+	    $arr2 = $res->fetch(PDO::FETCH_ASSOC );     //关联
+十六：文件操作
+	1. 查看文件权限(创建者拥有权限,与拥有着同组用户拥有权限,其他用户拥有的权限)
+		a”表示所有用户，“u”表示创建者、“g”表示创建者同组用户、“o”表示其他用户；“+”表示添加权限，“-”表示取消权限；“r”表示读权限、“w”表示写权限、“x”表示写权限。
+		ls -l
+	2. 修改文件权限
+		chmod -R 777 /phpApi
+		给文件夹下面所有文件添加执行权限
+	3.  解压
+		unzip php.zip
+	4.文件移动
+		cp -rf WxpayAPI_php_v3.0.1/lib ../ThirdParty/Wxpay
+		cp -rf ../tmp/WxpayAPI_php_v3.0.1/example/phpqrcode ./Qrcode
+十七：centos
+	1. http://rasilient.com
+十八： Vim进阶操作
+	a.  格式化显示代码
+		1，gg 跳转到第一行
+		2，shift+v 转到可视模式
+		3，shift+g 全选
+		4，按下神奇的 =
+	b. 分屏
+		1.vim -O User.php ../../models/User.php
+		2.分屏切换 ctrl + w
+	c.查看 grep 'errmsg' ./ -r
+	d.vim指定替换多行文本
+		以下命令将文中所有的字符串idiots替换成managers：
+		:1,$s/idiots/manages/g
+		通常我们会在命令中使用%指代整个文件做为替换范围：
+		:%s/search/replace/g
+		以下命令指定只在第5至第15行间进行替换:
+		:5,15s/dog/cat/g
+		以下命令指定只在当前行至文件结尾间进行替换:
+		:.,$s/dog/cat/g
+		以下命令指定只在后续9行内进行替换:
+		:.,.+8s/dog/cat/g
+		你还可以将特定字符做为替换范围。比如，将SQL语句从FROM至分号部分中的所有等号（=）替换为不等号（<>）：
+		:/FROM/,/;/s/=/<>/g
+	e.ctrl+shift+F
+	f.多行缩进
+		1.v
+		2.nj
+		3.><
+十九：
+	1.linux基本操作
+		1.tail -f nginx.log  查看日志
+		2.  进入nginx配置目录 cd /usr/local/nginx/conf/
+			grep 'log_format' ./ -r
+		3. nginx 日志目录 cd /var/log/nginx
+		4.rz 上传文件到linux
+二十：安装redis
+	1. wget http://download.redis.io/releases/redis-4.0.2.tar.gz
+	2.tar zxvf  解压
+	3. make install
+	4. which redis-check-rdb    /usr/local/bin/redis-check-rdb
+	5. 启动redis  redis-server
+	6. 查看启动服务： netstat -tpnlu
+	7.vim redis.conf
+	8.redis-server ./redis.conf          /usr/local/bin/redis-cli
+	9. ps -ef | grep redis
+	10.配置文件 ： redis-server /home/aqie/redis-4.0.0/redis.conf
+	11. 关闭redis redis-cli shutdown
+	12. 安装php  redis扩展  ./composer.phar require predis/predis
+二十一：常用php插件
+	1. https://packagist.org/
+	2. pecl.php.net   php官网
+	3. reids 官网
+二十二： CentOS 安装 supervisor 进程管理工具
+	1.yum install python-setuptools
+		a.安装pip （https://pypi.python.org/pypi/pip）
+			1.wget https://bootstrap.pypa.io/get-pip.py
+			2.python get-pip.py
+	2.pip install supervisor
+	3. ps aux | grep superv      supervisord
+	4. 生成supervisord配置文件
+		echo_supervisord_conf > /usr/supervisord.conf
+		supervisord -c /usr/supervisord.conf
+	5.supervisorctl -h
+	6.查看配置 vim /usr/supervisord.conf (改末尾include)
+		创建目录 mkdir /usr/supervisord
+	7.cd /usr/supervisord    vim nginx.ini
+	8. supervisorctl reload
+	9. supervisorctl status
+	10. supervisorctl start nginx
+	11. supervisorctl stop all
+	12. ps aux | grep nginx  查看nginx状态
+		killall nginx
+		ps aux | grep nginx
+		supervisorctl status
+	13. supervisorctl reload
+		1. supervisorctl status
+		2. ps aux | grep nginx   没有nginx进程
+		3.supervisorctl start nginx  启动nginx
+	14.改成redis  
+		(http://blog.csdn.net/albertfly/article/details/51581368 redis配置)
+		(http://www.jb51.net/article/101508.htm)
+		1. cp nginx.ini redis.ini
+		2. ps aux | grep redis
+		3. redis 退出 redis-cli shutdown
+		4.which redis-server    /usr/local/bin/redis-server
+		5. vim redis.ini
+		6. supervisorctl reload
+		7. supervisorctl status
+		8. ps aux | grep redis  没有运行
+		9. supervisorctl start redis  启动redis
+		10.  supervisorctl status  多点几下

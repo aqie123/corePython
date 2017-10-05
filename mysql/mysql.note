@@ -23,3 +23,8 @@
    insert into ecs_app_goods_gallery (goods_id,img_url,img_id) select goods_id,img_url,img_id from ecs_goods_gallery main where(
 	select count(1) from ecs_goods_gallery sub where main.goods_id = sub.goods_id and main.img_id > sub.img_id
 )<3;
+
+5. 添加主键
+	1. Alter table art add primary key(id);
+	   Alter table art change id id int(11) not null auto_increment;
+	2.先删除自增长在删除主键
