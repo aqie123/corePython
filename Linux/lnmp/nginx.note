@@ -1,0 +1,111 @@
+基础：
+	1. 配置文件    /usr/local/nginx/conf/nginx.conf
+	2. nginx目录  cd /usr/local/nginx/sbin
+	3.
+一：基础
+	1.配置语法
+	2.默认模块
+	3.log
+	4.访问限制
+		1.http请求和连接
+		2.请求限制和连接限制
+		3.access模块配置语法
+		4.请求限制局限性
+		5.基本安全认证
+		6.auth模块配置语法
+		7.安全认证局限性
+二：
+	
+	1.静态资源WEB服务
+		1.什么是静态资源
+		2.静态资源服务场景
+		3.静态资源服务配置
+		4.客户端缓存
+		5.静态资源压缩
+		6.防盗链
+		7.跨域访问
+	2.代理服务
+	3.负载均衡
+	4.缓存服务
+
+三：
+	1.动静分离
+	2.rewrite规则
+	3.HTTPS服务
+		a.HTTPS协议
+		b.配置语法
+		c.Nginx的HTTPS服务
+		d.苹果要求的https服务
+	4.Nginx与LUA开发
+	5.进阶模块配置
+四：中间件架构
+	1.常见问题
+	2.Nginx 应用层安全防护
+		1.sql注入防攻击
+		2.请求的访问控制
+		3.请求的频率控制
+		4.防爬虫
+	3.Nginx中间件架构性能优化问题
+		1.如何调试性能优化
+		2.性能优化影响因素
+		3.操作系统性能优化
+		4.Nginx性能优化
+
+		1.http 性能压测
+		2.性能瓶颈分析
+		3.系统性能优化
+		4.基于Nginx性能配置优化
+	4.新版本特性
+	5.中间件架构设计
+五：
+	1.http协议原理
+	2.linux系统原理
+
+六：
+	1./opt/app 代码目录
+	  /opt/work 脚本目录
+	  /opt/backup 备份目录  
+	  /opt/logs    自定义日志
+	  /opt/download   下载
+	    
+	2.查看规则 iptables -L
+	  iptables -F
+	  iptables -t nat -L
+	  iptables -t nat -F
+	  查看SElinux getenforce
+	3. 下载相关 yum install httpd-tools
+	4.nginx
+		1.IO多路复用 (主动上报) (select,poll,epoll)
+			多个描述符的I/O操作都能够在一个线程内并发交替地顺序完成
+			服用的同一个线程
+		2.epoll
+			1.FD就绪，采用系统回调函数之间将fd放入。效率更高
+			2.最大连接无限制
+			3.模块少，代码模块化
+		3.CPU亲和
+			每一个worker进程固定在cup上
+		4.sendfile
+	5.nginx yum 安装
+		a.卸载 编译安装nginx
+			1. 备份 
+				cp /usr/local/nginx/conf/nginx.conf /home/aqie/phpApi/nginx/
+				cp /usr/local/nginx/conf/vhosts/www.phpapi.com.conf  /home/aqie/phpApi/nginx/
+			2.cd /home/aqie/nginx-1.12.0 
+			3.rm -rf /usr/local/nginx rm -rf /home/aqie/nginx-1.12.0
+		1. http://nginx.org/en/linux_packages.html#stable
+		2. vim /etc/yum.repos.d/nginx.repo
+			[nginx]
+			name=nginx repo
+			baseurl=http://nginx.org/packages/centos/7/$basearch/
+			gpgcheck=0
+			enabled=1
+		3.yum list |grep nginx
+		4. yum install nginx    nginx -v
+		5.  查看rpm 安装的程序
+			rpm -ql nginx
+	6.nginx 目录配置
+		1. /usr/share/nginx/html  站点根目录
+		2. /usr/sbin/nginx        nginx 目录
+		3. /etc/logrotate.d/nginx  nginx日志轮转,用于logrotate服务日志切割
+		4. /etc/nginx/nginx.conf   配置文件
+		5. /etc/nginx/fastcgi_params  fastcgi配置

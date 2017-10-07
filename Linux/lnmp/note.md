@@ -87,6 +87,8 @@
 					更改文件夹权限	chmod -R 777 /var   
 					mkdir /var/temp /var/temp/nginx /var/run/nginx /var/log/nginx
 						  /usr/local/nginx
+						  
+
 				5.配置文件
 
 　　　　./configure --prefix=/usr/local/nginx --pid-path=/var/run/nginx/nginx.pid --lock-path=/var/lock/nginx.lock --error-log-path=/var/log/nginx/error.log --http-log-path=/var/log/nginx/access.log --with-http_gzip_static_module --http-client-body-temp-path=/var/temp/nginx/client --http-proxy-temp-path=/var/temp/nginx/proxy --http-fastcgi-temp-path=/var/temp/nginx/fastcgi --http-uwsgi-temp-path=/var/temp/nginx/uwsgi --http-scgi-temp-path=/var/temp/nginx/scgi
@@ -476,7 +478,7 @@
 		9.升级 vim8 (http://blog.csdn.net/u013388603/article/details/72780586)
 			1. 
 				cd /usr/local/src git clone git@github.com:vim/vim.git
-				cd vim/src
+				cd vim
 				cd /usr/local/src/vim/src
 
 				./configure --prefix=/usr/local/vim8
@@ -721,6 +723,7 @@
 		2，shift+v 转到可视模式
 		3，shift+g 全选
 		4，按下神奇的 =
+		5. 快速格式化 gg=G
 	b. 分屏
 		1.vim -O User.php ../../models/User.php
 		2.分屏切换 ctrl + w
@@ -743,6 +746,19 @@
 		1.v
 		2.nj
 		3.><
+	g. 新建文件
+		1. :new文件名
+		2. :e 打开文件
+		3. :x 退出，文件更改则保存
+		4. ! 可以使用 shell
+		5. :open
+		6. :bn 下一个文件 :bp 下一个文件
+	h.全选删除
+		1. ggdG   :%d
+	i.复制保留原格式
+		1. :set paste  开启
+		2. :set nopaste  关闭
+		3. :h paste 查看状态
 十九：
 	1.linux基本操作
 		1.tail -f nginx.log  查看日志
@@ -750,6 +766,8 @@
 			grep 'log_format' ./ -r
 		3. nginx 日志目录 cd /var/log/nginx
 		4.rz 上传文件到linux
+		5. find /home/aqie -name run.php
+			find ./  当前目录 
 二十：安装redis
 	1. wget http://download.redis.io/releases/redis-4.0.2.tar.gz
 	2.tar zxvf  解压
@@ -806,3 +824,76 @@
 		8. ps aux | grep redis  没有运行
 		9. supervisorctl start redis  启动redis
 		10.  supervisorctl status  多点几下
+二十三：安装Telnet服务
+	1. 查看linux版本 cat /etc/issue
+	2. rpm -qa | grep telnet  （rpm -qa xinetd  rpm -qa telnet-server）
+		yum list |grep telnet
+		yum list |grep xinetd
+		yum install xinetd.x86_64
+	3.  xinetd服务加入开机自启动
+		systemctl enable xinetd.service
+	4.  开机启动
+		systemctl enable telnet.socket
+	5.  systemctl start telnet.socket
+		systemctl start xinetd
+	3. yum install telnet-server 
+	4. 开启 ：
+		a. 编辑/etc/xinetd.d/telnet, 将其中的 disable = yes 的yes改为no
+		b. chkconfig telnet on
+	5. telnet 192.168.41.128 886
+	6. Ctrl + ] 会呼出telnet的命令行
+二十四：调试错误
+	3.strace php test.php，或者strace -p 进程ID
+	4.使用tcpdump工具分析网络通信过程
+	5.统计函数调用的耗时和成功率
+		使用xhporf/xdebug导出PHP请求的调用过程，然后分析每个函数调用的过程和耗时。
+		如mysql查询，curl，其他API调用等，通过记录起始和结束时microtime，返回的是不是false， 可以得到调用是否成功，耗时多少
+	6.  gdb使用
+		gdb -p 进程ID，再配合php-src的.gdbinit zbacktrace等工具，可以很方便地跟踪PHP程序的执行
+	7.  查看PHP内核和扩展源码
+二十五：PHP 中 9 大缓存技术总结(http://developer.51cto.com/art/201509/491334.htm)
+	1. 全页面静态化缓存
+		Ob_start()
+		$content = Ob_get_contents();
+		Ob_end_clean();
+	2. 页面部分缓存
+		1.ob_get_contents 
+		2.ESI之类的页面片段缓存策略
+	3.数据缓存
+		1.其实缓存文件中缓存的就是一个php数组之类；
+	4.查询缓存
+		1.就是根据查询语句来缓存；将查询得到的数据缓存在一个文件中，下次遇到相同的查询时，就直接先从这个文件里面调数据，不会再去查数据库；但此处的缓存文件名可能就需要以查询语句为基点来建立唯一标示
+	5. 按内容变更进行缓存
+		1.一个人流量很大的商城，商品很多，商品表必然比较大，这表的压力也比较重；我们就可以对商品显示页进行页面缓存
+		2.当商家在后台修改这个商品的信息时，点击保存，我们同时就更新缓存文件；那么，买家访问这个商品信息时，实际上访问的是一个静态页面，而不需要再去访问数据库；
+	6.内存式缓存(memcached是高性能的分布式内存缓存服务器。)
+		1.将需要缓存的信息，缓存到系统内存中，需要获取信息时，直接到内存中取
+	7.apache缓存模块
+		1,安装apache时：./configure –enable-cache –enable-disk-cache –enable-mem-cache
+	8. php APC缓存扩展
+		1.
+	9.Opcode缓存 （XCache、Turck MM Cache、PHP Accelerator）
+		1.首先php代码被解析为Tokens，然后再编译为Opcode码，最后执行Opcode码，返回结果；所以，对于相同的php文件，第一次运行时 可以缓存其Opcode码，下次再执行这个页面时，直接会去找到缓存下的opcode码，直接执行最后一步
+二十六：swoole学习 (swoole是一个高性能的异步网络通信引擎，为php提供了多线程功能)
+	1.php不支持多线程
+	2.查看gcc版本 gcc -v 
+	3. wget https://github.com/swoole/swoole-src/archive/v1.9.21.tar.gz
+	4.tar zxvf v1.9.21.tar.gz
+	5. cd swoole-src-1.9.21
+	6. phpize 
+	7. ./configure
+	8. make  && make install 
+	9. 安装位置  /usr/local/php/lib/php/extensions/no-debug-non-zts-20151012/
+	/usr/local/php/include/php/
+	10. vim /etc/php.ini
+	11. extension=/usr/local/php/lib/php/extensions/no-debug-non-zts-20151012/swoole.so
+	12. cd /usr/local/nginx/sbin && ./nginx -s stop && ./nginx   service php-fpm restart
+	13. 
+		1. cp /usr/local/php/lib/php/extensions/no-debug-non-zts-20151012/swoole.so /usr/local/php/include/php/
+		2. extension_dir = “/usr/local/web/php/lib/php/extension/” 
+		3. extension=curl.so 
+二十七：
+	1.ip addr
+二十八：Swoole使用
+	1. php run.php -c 100 -n 10000 -s tcp://192.168.41.128:886 -f long_tcp
+	2. 
