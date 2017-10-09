@@ -249,21 +249,32 @@
 			iptables -Z
 			#允许来自于lo接口的数据包(本地访问)
 			iptables -A INPUT -i lo -j ACCEPT
+
 			#开放22端口
 			iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+
 			#开放21端口(FTP)
 			iptables -A INPUT -p tcp --dport 21 -j ACCEPT
+
 			#开放80端口(HTTP)
 			iptables -A INPUT -p tcp --dport 80 -j ACCEPT
 			iptables -I INPUT -p tcp --dport 80 -j ACCEPT
+
 			#开放443端口(HTTPS)
 			iptables -A INPUT -p tcp --dport 443 -j ACCEPT
+			
+			# 关闭8002端口
+			iptables -I INPUT -p tcp --dport 8002 -j DROP
+
 			#允许ping
 			iptables -A INPUT -p icmp --icmp-type 8 -j ACCEPT
+
 			#允许接受本机请求之后的返回数据 RELATED,是为FTP设置的
 			iptables -A INPUT -m state --state  RELATED,ESTABLISHED -j ACCEPT
+
 			#其他入站一律丢弃
 			iptables -P INPUT DROP
+
 			#所有出站一律绿灯
 			iptables -P OUTPUT ACCEPT
 			#所有转发一律丢弃
@@ -759,6 +770,8 @@
 		1. :set paste  开启
 		2. :set nopaste  关闭
 		3. :h paste 查看状态
+	j. 配置所有
+		1. vim   /etc/vimrc 
 十九：
 	1.linux基本操作
 		1.tail -f nginx.log  查看日志

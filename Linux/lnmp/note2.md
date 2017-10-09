@@ -20,4 +20,21 @@
 		https://github.com/shadowsocks/shadowsocks-windows/releases
 三：Linux 上安装和配置 Munin 监控服务器
 	http://www.448569.gove.cn/article/516199.html
-四：
+四：安装ab压力测试
+	1.查看apr-util, yum-utils是否安装：
+		1.rpm -qa|grep apr-util
+		2.rpm -qa|grep yum-utils
+	2.yum安装
+		1. yum -y install apr-util
+		2. yum -y install yum-utils
+		3. cd /opt && mkdir abtmp
+		4. cd abtmp
+		5. yum install yum-utils.noarch
+		6. yumdownloader httpd-tools*
+		7. rpm2cpio httpd-tools*.rpm | cpio -idmv
+		8. cp /opt/abtmp/usr/bin/ab /usr/bin
+		9. ab -help
+五：Prox 代理
+	1. Nginx代理
+	2. CDN
+	3. 7lay LSB
