@@ -910,3 +910,8 @@
 二十八：Swoole使用
 	1. php run.php -c 100 -n 10000 -s tcp://192.168.41.128:886 -f long_tcp
 	2. 
+二十九：安装mariadb
+	1. yum install mariadb-server mariadb
+	2. yum install php php-fpm php-mysql
+	3. 启动 systemctl start mariadb
+			systemctl status mariadb

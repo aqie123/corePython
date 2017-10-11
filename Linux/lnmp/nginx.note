@@ -121,6 +121,7 @@
 			systemctl stop nginx
 		重启
 			systemctl restart nginx
+
 七： 基于nginx的中间件架构
 	1. HTTP请求
 		1.request 请求行，请求头，请求数据
@@ -188,6 +189,7 @@
 					1.nginx +LUA
 					2.nginx +LDAP nginx-auth-ldap模块
 		3. http_x_forearded_for = Client Ip ,Proxy IP
+
 八：常见的Nginx中间架构
 	1.静态资源WEB服务
 		1.什么是静态资源
@@ -213,7 +215,7 @@
 		1.浏览器禁止跨域访问
 			a.不安全 CSRF
 			b.Access-Control-Allow-Origin
-		2.  
+		2.  cd /etc/nginx/conf.d/
 			default.conf 80
 			access_module.conf 81
 			gunzip.com 82
@@ -222,8 +224,12 @@
 			location.conf 85
 			try_files.conf 86
 			alias_root 88
+			test_php       89
+			dynamic-static  90  动静分离 /home/aqie/phpApi/code5
+			phpApi 			91  phpApi yaf框架 (http://192.168.144.128:91/user/test)
+			Rewrite 		92  域名重定向  code6
 		3. 同源是指，域名(www.123.com, abc.123.com)，协议，端口均相同
-			1.jsonp
+			1. jsonp
 			2. php server 代理
 			3. php端修改header
 			4. nginx服务器修改header
@@ -283,7 +289,7 @@
 			3. 客户端缓存:
 		2. proxy_cache 配置
 			1.
-		3.大文件分片请求
+		3.大文件分片请求 (http_slice_module)
 			1.slice xize
 
 九：架构
@@ -297,3 +303,149 @@
 		1.
 		2.
 	5.传递用户真实ip
+		1.通过很多层代理 (通过第一层代理,约定信息头)
+	6.  常见错误码
+		1. 413: client_max_body_size
+		2. 502 bad gateway网关：后端服务无响应 
+		3. 504 Gateway Time out : 后端服务执行超时
+
+十：Nginx 性能优化
+	1. 如何优化
+		1. 系统结构瓶颈：观测指标，压力测试
+		2. 业务模式：接口业务类型，系统层次化结构 (代理，动静分离)
+		3.性能与安全：
+	2. ab
+		1.
+	3. 系统与Nginx性能优化
+		1.网络
+		2.系统(硬件)
+		3.服务(nginx)
+		4.程序(php,java)
+		5.数据库，底层服务
+	a. 系统与Nginx性能优化
+		1. 文件句柄
+			linux\Unix一切皆文件,文件句柄就是索引
+		2. 设置方式
+			系统全局修改,用户局部性修改,进程局部性修改
+			vim /etc/security/limits.conf
+			root soft nofile 65535  指定用户
+			root hard nofile 65535
+
+			# 最大线程数和文件数
+			* soft noproc 65535
+			* hard noproc 65535
+			*    soft nofile 25535  通配符(软限制值要小于或等于硬限制)
+			*    hard nofile 25535
+
+			vim /etc/nginx/nginx.conf
+			worker_rlimit_nofile 35535;  针对进程
+		3.cpu性能
+			1. 查看CPU : cat /proc/cpuinfo|grep "physical id"|sort|uniq|wc -l
+			双cpu：多少物理CPU
+			2. cpu核心数 cat /proc/cpuinfo|grep "cpu cores"|uniq    2 * 1
+			3. top  然后按1
+			4. vim /etc/nginx/nginx.conf
+				1. worker_processes  2;  启动多少worker进程 (最好和核心数一致)
+				2. 查看当前nginx使用cpu ps -eo pid,args,psr | grep [n]ginx (pid,进程名,使用的那个cpu)
+				3. worker_cpu_affinity auto;
+				4. worker_connections 10240;  10240 * 总核心数  = 处理连接总数
+				5. 作为静态资源服务器打开 tcp_nopush 
+				   动态接口 打开 tcp_nodeny
+		4.  10240 worker_connections exceed open file resource limit: 1024
+				(http://lutaoxu.blog.51cto.com/4224602/1614559)
+			1.more /proc/sys/fs/file-max  94959 (系统最大限制)
+				ulimit -n ： Linux的最大文件数限制 (每个进程打开最大文件数)
+			2.vim /etc/pam.d/login文件
+				添加 session  required  /lib64/security/pam_limits.so
+			3. 让Linux在启动完成后强行将系统级打开文件数硬限制设置为65535
+				1. 修改 /etc/rc.local
+				2. 添加 echo "65535" > /proc/sys/fs/file-max
+				3. 还可以在 rc.local 里面 明确命令 ulimit -n 10240
+				4. 除了系统设置也可以在nginx设置中： worker_rlimit_nofile 35535
+			4.  最大连接数 = worker_processes * worker_connections/4
+
+十一： Nginx 架构安全
+	1.常见恶意行为
+		1.爬虫，恶意抓取，资源盗用
+		2.基础防盗链
+		3.secure_link_module 对数据安全性提高加密验证和失效性
+			(核心重要数据)
+		4.access_module 对后台。部分用户服务提供IP防护
+	2. 应用层攻击手段
+		1.后台密码撞库，
+			a. 后台密码复杂度
+			b. access_module 对后台提供IP防控
+			c. 预警机制
+		2.常见的攻击手段
+			1. 文件上传漏洞(上传接口代码植入服务器,通过url访问执行代码)
+			  http://www.aqie.com/upload/1.jpg/1.php 将1.jpg作为php代码执行
+			  location ^~ /upload {
+			  	root /opt/app/images;
+			  	if($request_filename ~*(.*)\.php) {
+			  		return 403;
+			  	}
+			  }
+			2. SQL注入 (用户 -http> Nginx+LUA -Fastcgi> PHP -> mysql )
+				1.
+	3. Nginx防攻击策略
+		1.
+	4. Nginx+LUA 安全的waf防火墙
+		1. Cookie攻击; 异常post请求; cc攻击; 拦截URL参数;拦截arg
+		2. https://github.com/loveshell/ngx_lua_waf    /opt/download
+		3. cd /etc/nginx  && mv /opt/download/ngx_lua_waf/ ./waf/
+		4. vim /etc/nginx/nginx.conf 
+			lua_package_path "/etc/nginx/waf/?.lua";
+			lua_shared_dict limit 10m;
+			init_by_lua_file /etc/nginx/waf/init.lua;
+			access_by_lua_file /etc/nginx/waf/waf.lua;
+	5.基于Nginx的中间件架构
+		1.静态资源服务
+			a. 不同的目录匹配不同的规则
+		2.浏览器端设置对应缓存
+			a.	
+		3.防盗链
+		4.流量限制	
+		5.防资源盗用
+		6.静态资源压缩	
+		7.代理服务 http协议 流媒体，邮件协议，websocket代理
+		8.正向代理
+		9.反向代理
+			1.负载均衡
+			2.hash策略
+			3.后端节点检查机制
+			4.代理缓存设置(时间目录类型)
+	6.代理服务
+		1.正向代理，反向代理，负载均衡
+			LNMP Poxypass 头信息处理
+			代理缓存 分片请求 协议类型
+		2.硬件：
+			CPU  内存 硬盘
+		3.系统：
+			用户权限 日志目录存放
+		4.关联服务
+			LVS keepalive (负载均衡)
+			syslog (日志同步)
+			Fastcgi (php性能调优)
+		5.合理配置
+			1.日志关闭
+		6.了解原理
+			1.http协议原理
+			2.http状态原理
+			3.os原理
+		7.关注日志
+			1.
+
+十二：Nginx动静分离 (第四章)
+	1.保证动静服务器拥有同样的代码项目，一般使用rsync同步软件同步不同服务器中的项目资源文件
+	2. 分离资源,减少不必要的请求消耗，减少请求延时
+	3.Rewrite (url重定向)
+		1. url跳转访问,支持开发设计
+			(页面跳转,兼容性支持,展示效果)
+		2. SEO优化
+		3. 维护
+			后台维护，流量转发
+		4.安全
+	4. rewrite regex replacement
+		Context (server.location,if)
+
+

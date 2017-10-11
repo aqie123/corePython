@@ -11,4 +11,7 @@
 	1. ps -ef|grep php  (UID       PID   PPID     C STIME   TTY    TIME     CMD)
 	   ps -ef|grep xxx.php
 	2. netstat -anp|grep 886  检查端口
-	3.杀死进程 kill 4830 pid     
+	3.杀死进程 kill 4830 pid  
+3.
+	1. ps -ef|grep nginx 查看nginx是否启动
+	2. netstat -luntp|grep nginx  查看 nginx监听端口

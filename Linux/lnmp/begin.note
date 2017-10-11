@@ -3,6 +3,11 @@ mkdir /var/run/nginx
 cd /usr/local/nginx/sbin/ && ./nginx
 /etc/init.d/php-fpm start
 service php-fpm restart
+
+查看 php-fpm状态
+ps -aux|grep php
+
+php-fpm -D 守护进程方式启动
   		
   		
 4. nginx重启 : 
@@ -19,3 +24,8 @@ php ini /etc/php.ini
 killall php-fpm
 
 /usr/local/php/bin/php  php目录
+
+测试配置文件是否正确 ： nginx -t -c /etc/nginx/nginx.conf
+执行配置文件 :  nginx -s reload -c /etc/nginx/nginx.conf
+关闭ngnix    ： nginx -s stop -c /etc/nginx/nginx.conf
+启动nginx    nginx -c /etc/nginx/nginx.conf

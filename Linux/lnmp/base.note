@@ -1,0 +1,6 @@
+一. 文件操作
+	1.mkdir -p 参数P代表parents,表示递归创建目录
+	2.回到上一级目录 cd -
+	3. ln –s 源文件 目标文件
+二： 小技巧
+	1. while true; do date >> date.txt ; sleep 5 ; done &
