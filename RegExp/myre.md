@@ -1,0 +1,12 @@
+re模块函数
+1.compile
+2.match
+3.search
+4.findall
+5.finditer
+6.split
+7.sub
+8.purge
+9.group
+10.groups
+11.groupdict
