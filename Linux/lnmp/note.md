@@ -1,4 +1,4 @@
-一： 安装谷歌浏览器
+一： 安装谷歌浏览器 (http://blog.csdn.net/u010472499/article/details/72327963)
 	1.chmod a+w -R /home/PycharmProjects/       ./vmware-install.pl
 	2.su root
 	3.yum -y install kernel-devel-$(uname -r)
@@ -13,7 +13,7 @@
 		1.yum search 
 		2.yum install
 		3.rpm -qa | grep firefox查询已安装的旧版firefox
-		4.rpm -e firefox-45.4.0-1.el7.centos.x86_64 删除旧版firefox
+		4.rpm -e firefox-52.2.0-2.el7.centos.x86_64 删除旧版firefox
 
 	9. 安装谷歌浏览器
 		1.vim /etc/yum.repos.d/google-chrome.repo
@@ -75,9 +75,8 @@
 			a.查看gcc版本 
 				gcc -v
 			b.yum install gcc-c++
-			c.yum install -y pcre pcre-devel
-			d.yum install -y zlib zlib-devel
-			e.yum install -y openssl openssl-devel
+			c.yum install -y pcre pcre-devel zlib zlib-devel openssl openssl-devel
+			
 
 			f.下载nginx源码包
 				1.wget http://nginx.org/download/nginx-1.12.0.tar.gz
@@ -132,11 +131,12 @@
 			b.	wget https://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm
 				sudo rpm -Uvh mysql57-community-release-el7-11.noarch.rpm
 				sudo yum install mysql-community-server
-			c. 启动mysql  sudo service mysqld start
-			   查看mysql服务状态 ： sudo service mysqld status
+			c. 启动mysql  service mysqld start
+			   查看mysql服务状态 ： service mysqld status
 			d.  查看临时密码 ： cat /var/log/mysqld.log  | grep password  
 				修改密码 ： SET PASSWORD FOR 'root'@'localhost' = PASSWORD('root'); 
-							SET PASSWORD FOR 'root'@'localhost' = 'root'
+							SET PASSWORD FOR 'root'@'localhost' = 'root';
+							update mysql.user set password=PASSWORD（'新密码'） where User='root'；
 				设置密码：
 					1.set global validate_password_policy=0;
 					2.set global validate_password_length=4;
@@ -160,13 +160,21 @@
 			1.下载
 				wget -O php7.tar.gz http://cn2.php.net/get/php-7.0.4.tar.gz/from/this/mirror
 			2. 解压 tar -xvf php7.tar.gz
-			3. cd php-7.0.4
+			tar -zxvf php-7.1.10.tar.gz
+			3. cd php-7.1.10
 			4.安装依赖包
 			yum install libxml2 libxml2-devel openssl openssl-devel bzip2 bzip2-devel libcurl libcurl-devel libjpeg libjpeg-devel libpng libpng-devel freetype freetype-devel gmp gmp-devel libmcrypt libmcrypt-devel readline readline-devel libxslt libxslt-devel
 			5.配置文件
 				1.libmcrypt源码安装方法
 					http://ask.apelearn.com/question/7296
+					tar -zxvf libmcrypt-2.5.8.tar.gz
+					cd /usr/local/src/libmcrypt-2.5.8
+					./configure --prefix=/usr/local
+					make && make install 
+					https://sourceforge.net/projects/mcrypt/files/Libmcrypt/2.5.8/(download page)
 				2.vim /etc/ld.so.conf.d/local.conf
+				3.   (http://www.junww.com/server/2015/1125/194.html)
+					export LD_LIBRARY_PATH=/lib/:/usr/lib/:/usr/local/lib
 			6.make && make install
 			7.配置环境变量
 				vim /etc/profile
@@ -209,7 +217,7 @@
 					./nginx -s quit && ./nginx
 			10. 配置php.ini (/etc/php.ini)  （/usr/local/php/etc/php-fpm.d/www.conf）
 				1. 报错 display_errors = On  vim /usr/local/php/etc/php-fpm.d/www.conf  php_flag[display_errors] = on
-				2.
+				2. service php-fpm restart   
 					
 		4.yum安装php
 			1.安装epel-release
@@ -355,74 +363,7 @@
 				  	 
 
 四：
-	./configure \
-	--prefix=/usr/local/php \
-	--with-config-file-path=/etc \
-	--enable-fpm \
-	--with-fpm-user=nginx  \
-	--with-fpm-group=nginx \
-	--enable-inline-optimization \
-	--disable-debug \
-	--disable-rpath \
-	--enable-shared  \
-	--enable-soap \
-	--with-libxml-dir \
-	--with-xmlrpc \
-	--with-openssl \
-	--with-mcrypt \
-	--with-mhash \
-	--with-pcre-regex \
-	--with-sqlite3 \
-	--with-zlib \
-	--enable-bcmath \
-	--with-iconv \
-	--with-bz2 \
-	--enable-calendar \
-	--with-curl \
-	--with-cdb \
-	--enable-dom \
-	--enable-exif \
-	--enable-fileinfo \
-	--enable-filter \
-	--with-pcre-dir \
-	--enable-ftp \
-	--with-gd \
-	--with-openssl-dir \
-	--with-jpeg-dir \
-	--with-png-dir \
-	--with-zlib-dir  \
-	--with-freetype-dir \
-	--enable-gd-native-ttf \
-	--enable-gd-jis-conv \
-	--with-gettext \
-	--with-gmp \
-	--with-mhash \
-	--enable-json \
-	--enable-mbstring \
-	--enable-mbregex \
-	--enable-mbregex-backtrack \
-	--with-libmbfl \
-	--with-onig \
-	--enable-pdo \
-	--with-mysqli=mysqlnd \
-	--with-pdo-mysql=mysqlnd \
-	--with-zlib-dir \
-	--with-pdo-sqlite \
-	--with-readline \
-	--enable-session \
-	--enable-shmop \
-	--enable-simplexml \
-	--enable-sockets  \
-	--enable-sysvmsg \
-	--enable-sysvsem \
-	--enable-sysvshm \
-	--enable-wddx \
-	--with-libxml-dir \
-	--with-xsl \
-	--enable-zip \
-	--enable-mysqlnd-compression-support \
-	--with-pear \
-	--enable-opcache
+./configure --prefix=/usr/local/php --with-config-file-path=/etc --enable-fpm --with-fpm-user=nginx  --with-fpm-group=nginx --enable-inline-optimization --disable-debug --disable-rpath --enable-shared  --enable-soap --with-libxml-dir --with-xmlrpc --with-openssl --with-mcrypt --with-mhash --with-pcre-regex --with-sqlite3 --with-zlib --enable-bcmath --with-iconv --with-bz2 --enable-calendar --with-curl --with-cdb --enable-dom --enable-exif --enable-fileinfo --enable-filter --with-pcre-dir --enable-ftp --with-gd --with-openssl-dir --with-jpeg-dir --with-png-dir --with-zlib-dir  --with-freetype-dir --enable-gd-native-ttf --enable-gd-jis-conv --with-gettext --with-gmp --with-mhash --enable-json --enable-mbstring --enable-mbregex --enable-mbregex-backtrack --with-libmbfl --with-onig --enable-pdo --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd --with-zlib-dir --with-pdo-sqlite --with-readline --enable-session --enable-shmop --enable-simplexml --enable-sockets  --enable-sysvmsg --enable-sysvsem --enable-sysvshm --enable-wddx --with-libxml-dir --with-xsl --enable-zip --enable-mysqlnd-compression-support --with-pear --enable-opcache
 
 
 五： linux 基本使用
@@ -462,44 +403,33 @@
 			echo "粗错啦！！！" >> /home/aqie/aqie/50x.html
 
 	8.vim常见操作
-		1.快速查找
-			/error_reporting = E_ALL
-		2.  
-			全部删除：按esc后，然后dG
-			全部复制：按esc后，然后ggyG
-		3.撤销
-			u   撤销上一步的操作
-			Ctrl+r 恢复上一步被撤销的操作
-		4.G: 移动到文档末尾
-		  gg: 移动到文档开头
-		5.dd：剪切当前行
-		6.跳转到行尾 End
-		7.格式化代码
-			a. gg跳转到第一行
-			b. shift + v转到可视模式
-			c. shift + g 全选
-			d. =
-		    格式化全文： gg=G
-		8. vim 插件 Vundle （）
+		
+		8. vim 插件 Vundle （https://github.com/VundleVim/Vundle.vim）
 			1.git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
 			2. 配置文件  vim /home/aqie/.vimrc
 				a.tree :helptags ~/.vim/bundle/nerdtree/doc/
 				b.ctrl + w 切换
 				c. t 在新标签页打开
 		9.升级 vim8 (http://blog.csdn.net/u013388603/article/details/72780586)
-			1. 
-				cd /usr/local/src git clone git@github.com:vim/vim.git
-				cd vim
+					http://blog.csdn.net/nzyalj/article/details/75331822
+			1. (http://blog.csdn.net/u013388603/article/details/72780586)
+			      yum remove vim* -y
+				 git clone git@github.com:vim/vim.git /usr/local/src/vim
+				
 				cd /usr/local/src/vim/src
 
 				./configure --prefix=/usr/local/vim8
 				make && make install
+				/usr/local/bin/vim 
+				export PATH=/usr/local/bin:$PATH
 			2.编辑这个文件  /usr/local/vim8/bin/vim /etc/profile.d/path.sh
 			 添加  export PATH=$PATH:/usr/local/vim8/bin/
 			 使命令生效  source /etc/profile.d/path.sh
-			3. ./configure --prefix=/usr/local/vim8 --enable-pythoninterp=yes --enable-python3interp=yes --with-python-config-dir=/usr/bin/python2.7-config --enable-multibyte 
+			3. ./configure --with-features=huge -enable-pythoninterp --enable-python3interp
 
-			./configure --with-features=huge --enable-multibyte --enable-rubyinterp=yes --enable-pythoninterp=yes --with-python-config-dir=/usr/bin/python2.7-config --enable-python3interp=yes --with-python3-config-dir=/usr/local/bin/python3.5-config  --enable-gui=gtk2 --enable-cscope --prefix=/usr/local/vim8
+			./configure --with-features=huge --enable-multibyte --enable-rubyinterp=yes --enable-pythoninterp=yes --enable-python3interp=yes --with-python3-config-dir=/usr/local/bin/python3.5-config  --enable-gui=gtk2 --enable-cscope --prefix=/usr/local/vim8
+
+			--with-python-config-dir=/usr/bin/python2.7-config 
 			4. vim --version  查看是否支持python
 		10.
 			系统 vimrc 文件: "$VIM/vimrc"
@@ -508,39 +438,7 @@
 		11. vim 配置
 			1.http://blog.csdn.net/g_brightboy/article/details/14229139
 			2.插件安装： http://blog.csdn.net/namecyf/article/details/7787479
-		12.复制 粘贴 剪切 删除
-			1. 2yy拷贝当前行及其下一行
-			2. shift+p 在当前行前粘贴
-			3. :1,10d 将1-10行剪切。
-			4. 
-				a.删除不能用 : set backspace=indent,eol,start
-				b.3dd代表删除三行
-				c.用v选中文本之后可以按y进行复制，如果按d就表示剪切，之后按p进行粘贴
-			5.跳转到指定行
-				a. :12跳转到第十二行
-				b. dw 删除光标后单词剩余部分
-				c. d$ 删除光标之后该行剩余部分
-				d. dd 删除当前该行
-				e. :1 :$ 跳转到行首行尾  gg跳转到首行，G跳转到最后一行
-					下一行o 
-				f.跳转到光标之前位置 Ctrl + O
-		13.分屏
-			1.vim -o 
-			2.vim -On file1 file2 ...
-		14. 代码折叠
-			zc 折叠最外层
-			zo 展开最外层
-			za 互相切换
-		15.撤销
-			1. u 撤销
-			2. ctrl+r 反撤销
-		16.展示目录
-			1. tree vendor -L 2 行级限制
-		17.vim多行缩进
-			1.v进入visual状态，选择多行，用>或<缩进或缩出 
-			2.多行用n== ; gg=G可对整篇代码进行排版
-			3. gg   shift+G 首尾
-			4. (http://blog.csdn.net/topasstem8/article/details/6678215)
+		
 
 	9. linux 连接github
 		1.git config --global user.email "2924811900@qq.com"
@@ -729,49 +627,6 @@
 十七：centos
 	1. http://rasilient.com
 十八： Vim进阶操作
-	a.  格式化显示代码
-		1，gg 跳转到第一行
-		2，shift+v 转到可视模式
-		3，shift+g 全选
-		4，按下神奇的 =
-		5. 快速格式化 gg=G
-	b. 分屏
-		1.vim -O User.php ../../models/User.php
-		2.分屏切换 ctrl + w
-	c.查看 grep 'errmsg' ./ -r
-	d.vim指定替换多行文本
-		以下命令将文中所有的字符串idiots替换成managers：
-		:1,$s/idiots/manages/g
-		通常我们会在命令中使用%指代整个文件做为替换范围：
-		:%s/search/replace/g
-		以下命令指定只在第5至第15行间进行替换:
-		:5,15s/dog/cat/g
-		以下命令指定只在当前行至文件结尾间进行替换:
-		:.,$s/dog/cat/g
-		以下命令指定只在后续9行内进行替换:
-		:.,.+8s/dog/cat/g
-		你还可以将特定字符做为替换范围。比如，将SQL语句从FROM至分号部分中的所有等号（=）替换为不等号（<>）：
-		:/FROM/,/;/s/=/<>/g
-	e.ctrl+shift+F
-	f.多行缩进
-		1.v
-		2.nj
-		3.><
-	g. 新建文件
-		1. :new文件名
-		2. :e 打开文件
-		3. :x 退出，文件更改则保存
-		4. ! 可以使用 shell
-		5. :open
-		6. :bn 下一个文件 :bp 下一个文件
-	h.全选删除
-		1. ggdG   :%d
-	i.复制保留原格式
-		1. :set paste  开启
-		2. :set nopaste  关闭
-		3. :h paste 查看状态
-	j. 配置所有
-		1. vim   /etc/vimrc 
 十九：
 	1.linux基本操作
 		1.tail -f nginx.log  查看日志
@@ -915,3 +770,5 @@
 	2. yum install php php-fpm php-mysql
 	3. 启动 systemctl start mariadb
 			systemctl status mariadb
+30. SUBLIME
+	1.CTRL +SHIFT +L
