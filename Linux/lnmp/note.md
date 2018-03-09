@@ -151,8 +151,16 @@
 			e.重启mysql服务
 				systemctl restart mysqld.service
 			f.mysql 允许远程用户登录访问
-				1.GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '753951kzlAqie*7jskols' WITH GRANT OPTION;
+				1.GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '753951kzlAqie*qazwsx' WITH GRANT OPTION;
 				2.FLUSH PRIVILEGES; 
+				3.GRANT ALL PRIVILEGES ON test.* TO 'test'@'%' identified by 'mimatest';
+					CREATE USER 'username'@'localhost' IDENTIFIED BY 'password';
+
+					GRANT ALL PRIVILEGES ON *.* TO 'username'@'localhost' WITH GRANT OPTION;
+
+					CREATE USER 'username'@'%' IDENTIFIED BY 'password';
+
+					GRANT ALL PRIVILEGES ON *.* TO 'username'@'%' WITH GRANT OPTION;
 
 		3.编译安装php
 			(https://secure.php.net/manual/zh/install.unix.nginx.php)
@@ -250,6 +258,9 @@
 			#允许来自于lo接口的数据包(本地访问)
 			iptables -A INPUT -i lo -j ACCEPT
 
+			iptables -L -n --line-number
+			iptables -D INPUT 1
+
 			#开放22端口
 			iptables -A INPUT -p tcp --dport 22 -j ACCEPT
 
@@ -258,10 +269,12 @@
 
 			#开放80端口(HTTP)
 			iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+			iptables -A INPUT -p tcp --dport 81 -j ACCEPT
 			iptables -I INPUT -p tcp --dport 80 -j ACCEPT
 
 			#开放443端口(HTTPS)
 			iptables -A INPUT -p tcp --dport 443 -j ACCEPT
+			iptables -A INPUT -p tcp --dport 8080 -j ACCEPT
 			
 			# 关闭8002端口
 			iptables -I INPUT -p tcp --dport 8002 -j DROP
