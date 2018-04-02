@@ -1,0 +1,1 @@
+lrwxrwxrwx. 1 root root 7 7月  31 2017 /bin -> usr/bin
